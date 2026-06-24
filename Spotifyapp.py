@@ -73,57 +73,20 @@ section[data-testid="stSidebar"] h1{
     margin-bottom:20px;
 }
 
-/* ===== SLIDER COLORS (full green track, white text labels) ===== */
-
-/* Reset the outer track wrapper so it stays its normal thin shape */
-div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
-    background:transparent !important;
-}
-
-/* The actual track segments (both the selected/left and unselected/right
-   portions) are positioned with inline "left" + "width" styles by BaseWeb.
-   Targeting that combination hits both segments precisely, without
-   touching the outer wrapper or the thumb. */
-div[data-testid="stSlider"] div[data-baseweb="slider"] div[style*="left"][style*="width"] {
-    background-color:#1DB954 !important;
-    background:#1DB954 !important;
-}
-
-/* Thumb (the round handle) — dark center with a green ring,
-   so it stays visible as a distinct circle rather than blending into the bar */
+/* ===== SLIDER LOOK ===== */
+/* Color is now handled by .streamlit/config.toml (primaryColor = green).
+   We only add a cosmetic touch here: a black-center thumb with a green ring,
+   so the handle stays visually distinct from the track. */
 div[data-testid="stSlider"] div[role="slider"] {
     background-color:#000000 !important;
     border:3px solid #1DB954 !important;
     box-shadow:none !important;
 }
 
-/* Value label shown above the thumb — white text, no background box */
-div[data-testid="stSlider"] div[data-testid="stThumbValue"] {
-    background:transparent !important;
-    color:#ffffff !important;
-}
-
-/* Min/max labels ("0" / "100") — white text, no background box */
+div[data-testid="stSlider"] label,
+div[data-testid="stSlider"] div[data-testid="stThumbValue"],
 div[data-testid="stSlider"] div[data-testid="stTickBarMin"],
 div[data-testid="stSlider"] div[data-testid="stTickBarMax"] {
-    background:transparent !important;
-    color:#ffffff !important;
-}
-
-/* Catch-all safety net: anything inside the slider still using
-   Streamlit's default red gets forced green (track) or white (text) */
-div[data-testid="stSlider"] [style*="255, 75, 75"],
-div[data-testid="stSlider"] [style*="rgb(255,75,75)"],
-div[data-testid="stSlider"] [style*="ff4b4b"],
-div[data-testid="stSlider"] [style*="#ff4b4b"] {
-    background-color:#1DB954 !important;
-    background:#1DB954 !important;
-    color:#ffffff !important;
-    border-color:#1DB954 !important;
-}
-
-/* Slider widget label (e.g. "Popularity (0 - 100)") in white */
-div[data-testid="stSlider"] label {
     color:#ffffff !important;
 }
 
