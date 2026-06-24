@@ -1,100 +1,154 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import joblib
+import plotly.graph_objects as go
 
-# ==========================
-# PAGE CONFIG
-# ==========================
+# ----------------------------------------------------
+# Page Configuration
+# ----------------------------------------------------
 st.set_page_config(
     page_title="Spotify Song Clustering",
     page_icon="🎵",
     layout="wide"
 )
 
-# ==========================
-# SPOTIFY CSS
-# ==========================
+# ----------------------------------------------------
+# Custom CSS — Dark theme with green accents
+# ----------------------------------------------------
 st.markdown("""
 <style>
+    /* Overall background */
+    .stApp {
+        background-color: #0e1117;
+        color: #f0f0f0;
+    }
 
-.stApp{
-    background-color:#000000;
-    color:white;
-}
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: #131722;
+        border-right: 1px solid #1f2530;
+    }
 
-[data-testid="stSidebar"]{
-    background-color:#050505;
-    border-right:2px solid #1DB954;
-}
+    /* Title */
+    .app-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #1ED760;
+        margin-bottom: 0px;
+    }
 
-h1,h2,h3{
-    color:#1DB954 !important;
-    font-weight:bold;
-}
+    .app-subtitle {
+        color: #c9c9c9;
+        font-size: 1.05rem;
+        margin-top: 4px;
+        margin-bottom: 10px;
+    }
 
-section[data-testid="stSidebar"] h1{
-    color:#1DB954 !important;
-}
+    hr {
+        border: none;
+        border-top: 1px solid #1ED760;
+        opacity: 0.5;
+    }
 
-.stButton > button{
-    width:100%;
-    background-color:#1DB954;
-    color:white;
-    border:none;
-    border-radius:10px;
-    height:55px;
-    font-size:20px;
-    font-weight:bold;
-}
+    /* Section headers */
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #1ED760;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-top: 25px;
+        margin-bottom: 10px;
+    }
 
-.stButton > button:hover{
-    background-color:#1ed760;
-    color:black;
-}
+    /* Predict button */
+    div.stButton > button {
+        background-color: #1ED760;
+        color: #0e1117;
+        font-weight: 700;
+        border-radius: 8px;
+        border: none;
+        padding: 0.6em 1.5em;
+        font-size: 1rem;
+    }
+    div.stButton > button:hover {
+        background-color: #17b552;
+        color: #0e1117;
+    }
 
-.result-card{
-    border:2px solid #1DB954;
-    border-radius:15px;
-    padding:25px;
-    background-color:#0b0b0b;
-}
+    /* Dataframe styling */
+    .stDataFrame {
+        border: 1px solid #1f2530;
+        border-radius: 8px;
+    }
 
-.about-card{
-    border:1px solid #1DB954;
-    border-radius:12px;
-    padding:20px;
-    background-color:#0b0b0b;
-}
+    /* Info / success boxes */
+    div[data-testid="stSuccess"] {
+        background-color: rgba(30, 215, 96, 0.1);
+        border: 1px solid #1ED760;
+        border-radius: 8px;
+    }
+    div[data-testid="stInfo"] {
+        background-color: rgba(30, 215, 96, 0.08);
+        border: 1px solid #1ED760;
+        border-radius: 8px;
+    }
 
-.green-line{
-    border-top:2px solid #1DB954;
-    margin-top:10px;
-    margin-bottom:20px;
-}
+    /* About project box */
+    .about-box {
+        background-color: #131722;
+        border: 1px solid #1ED760;
+        border-radius: 10px;
+        padding: 18px 22px;
+        color: #e6e6e6;
+        line-height: 1.6;
+    }
+    .about-box b {
+        color: #1ED760;
+    }
 
+    /* Footer */
+    .footer {
+        text-align: center;
+        color: #9a9a9a;
+        font-size: 0.9rem;
+        margin-top: 30px;
+        padding-bottom: 15px;
+    }
+    .footer span {
+        color: #1ED760;
+        font-weight: 600;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================
-# LOAD MODEL
-# ==========================
-
+# ----------------------------------------------------
+# Load Model
+# ----------------------------------------------------
 pipeline = joblib.load("spotify_clustering_pipeline.pkl")
 
-# ==========================
-# SIDEBAR
-# ==========================
-
-st.sidebar.markdown("# 🎵 Spotify")
-
-st.sidebar.markdown("### ENTER SONG FEATURES")
-
-popularity = st.sidebar.slider(
-    "Popularity (0 - 100)",
-    0,
-    100,
-    50
+# ----------------------------------------------------
+# Title
+# ----------------------------------------------------
+st.markdown('<div class="app-title">🎵 Spotify Song Clustering</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="app-subtitle">This application predicts the cluster of a song '
+    'based on its audio features using a trained K-Means clustering model.</div>',
+    unsafe_allow_html=True
 )
+st.markdown("<hr>", unsafe_allow_html=True)
+
+# ----------------------------------------------------
+# Sidebar Inputs
+# ----------------------------------------------------
+st.sidebar.header("Enter Song Features")
+
+popularity = st.sidebar.slider("Popularity (0 - 100)", 0, 100, 50)
 
 duration_ms = st.sidebar.number_input(
     "Duration (ms)",
@@ -103,129 +157,36 @@ duration_ms = st.sidebar.number_input(
     value=200000
 )
 
-danceability = st.sidebar.slider(
-    "Danceability (0 - 1)",
-    0.0,
-    1.0,
-    0.50
-)
+danceability = st.sidebar.slider("Danceability (0 - 1)", 0.0, 1.0, 0.5)
+energy = st.sidebar.slider("Energy (0 - 1)", 0.0, 1.0, 0.5)
+loudness = st.sidebar.slider("Loudness (-60 - 5)", -60.0, 5.0, -10.0)
+speechiness = st.sidebar.slider("Speechiness (0 - 1)", 0.0, 1.0, 0.1)
+acousticness = st.sidebar.slider("Acousticness (0 - 1)", 0.0, 1.0, 0.5)
+instrumentalness = st.sidebar.slider("Instrumentalness (0 - 1)", 0.0, 1.0, 0.0)
+liveness = st.sidebar.slider("Liveness (0 - 1)", 0.0, 1.0, 0.2)
+valence = st.sidebar.slider("Valence (0 - 1)", 0.0, 1.0, 0.5)
+tempo = st.sidebar.slider("Tempo (0 - 250)", 0.0, 250.0, 120.0)
 
-energy = st.sidebar.slider(
-    "Energy (0 - 1)",
-    0.0,
-    1.0,
-    0.50
-)
-
-loudness = st.sidebar.slider(
-    "Loudness (-60 - 5)",
-    -60.0,
-    5.0,
-    -10.0
-)
-
-speechiness = st.sidebar.slider(
-    "Speechiness (0 - 1)",
-    0.0,
-    1.0,
-    0.10
-)
-
-acousticness = st.sidebar.slider(
-    "Acousticness (0 - 1)",
-    0.0,
-    1.0,
-    0.50
-)
-
-instrumentalness = st.sidebar.slider(
-    "Instrumentalness (0 - 1)",
-    0.0,
-    1.0,
-    0.00
-)
-
-liveness = st.sidebar.slider(
-    "Liveness (0 - 1)",
-    0.0,
-    1.0,
-    0.20
-)
-
-valence = st.sidebar.slider(
-    "Valence (0 - 1)",
-    0.0,
-    1.0,
-    0.50
-)
-
-tempo = st.sidebar.slider(
-    "Tempo (0 - 250)",
-    0.0,
-    250.0,
-    120.0
-)
-
-# ==========================
-# INPUT DATA
-# ==========================
-
+# ----------------------------------------------------
+# Input DataFrame
+# ----------------------------------------------------
 input_data = pd.DataFrame([[
-    popularity,
-    duration_ms,
-    danceability,
-    energy,
-    loudness,
-    speechiness,
-    acousticness,
-    instrumentalness,
-    liveness,
-    valence,
-    tempo
+    popularity, duration_ms, danceability, energy, loudness,
+    speechiness, acousticness, instrumentalness, liveness, valence, tempo
 ]], columns=[
-    'popularity',
-    'duration_ms',
-    'danceability',
-    'energy',
-    'loudness',
-    'speechiness',
-    'acousticness',
-    'instrumentalness',
-    'liveness',
-    'valence',
-    'tempo'
+    'popularity', 'duration_ms', 'danceability', 'energy', 'loudness',
+    'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo'
 ])
 
-# ==========================
-# MAIN HEADER
-# ==========================
+# ----------------------------------------------------
+# Display Input Data
+# ----------------------------------------------------
+st.markdown('<div class="section-header">📊 Input Features</div>', unsafe_allow_html=True)
+st.dataframe(input_data, use_container_width=True)
 
-st.markdown("# 🎵 Spotify Song Clustering")
-
-st.write(
-    "This application predicts the cluster of a song based on its audio features using a trained K-Means clustering model."
-)
-
-st.markdown(
-    "<div class='green-line'></div>",
-    unsafe_allow_html=True
-)
-
-# ==========================
-# INPUT FEATURES
-# ==========================
-
-st.markdown("## 📋 INPUT FEATURES")
-
-st.dataframe(
-    input_data,
-    use_container_width=True
-)
-
-# ==========================
-# CLUSTER DETAILS
-# ==========================
-
+# ----------------------------------------------------
+# Cluster Names & Descriptions
+# ----------------------------------------------------
 cluster_names = {
     0: "High Energy Segment",
     1: "Popular Music Segment",
@@ -235,102 +196,102 @@ cluster_names = {
 }
 
 cluster_descriptions = {
-    0: "Songs with high energy and tempo.",
-    1: "Popular songs with broad audience appeal.",
+    0: "Songs with high energy, loudness and tempo.",
+    1: "Popular songs with strong audience appeal.",
     2: "Highly danceable songs suitable for playlists and parties.",
-    3: "Acoustic and softer songs.",
+    3: "Acoustic and soft songs with lower intensity.",
     4: "Songs with balanced audio characteristics."
 }
 
-# ==========================
-# PREDICTION
-# ==========================
-
-if st.button("🎵 PREDICT CLUSTER"):
-
-    scaled_input = pipeline.named_steps['scaler'].transform(
-        input_data
+# ----------------------------------------------------
+# Helper: simulate cluster distribution for the chart
+# (replace this with your real dataset's cluster counts if available)
+# ----------------------------------------------------
+@st.cache_data
+def get_cluster_distribution(_pipeline, n_samples=10000, seed=42):
+    rng = np.random.default_rng(seed)
+    sample = pd.DataFrame({
+        'popularity': rng.uniform(0, 100, n_samples),
+        'duration_ms': rng.uniform(10000, 500000, n_samples),
+        'danceability': rng.uniform(0, 1, n_samples),
+        'energy': rng.uniform(0, 1, n_samples),
+        'loudness': rng.uniform(-60, 5, n_samples),
+        'speechiness': rng.uniform(0, 1, n_samples),
+        'acousticness': rng.uniform(0, 1, n_samples),
+        'instrumentalness': rng.uniform(0, 1, n_samples),
+        'liveness': rng.uniform(0, 1, n_samples),
+        'valence': rng.uniform(0, 1, n_samples),
+        'tempo': rng.uniform(0, 250, n_samples),
+    })
+    labels = _pipeline.named_steps['kmeans'].predict(
+        _pipeline.named_steps['scaler'].transform(sample)
     )
+    counts = pd.Series(labels).value_counts().sort_index()
+    return counts
 
-    cluster = pipeline.named_steps['kmeans'].predict(
-        scaled_input
+# ----------------------------------------------------
+# Prediction
+# ----------------------------------------------------
+predicted_cluster = None
+
+if st.button("🎵 Predict Cluster"):
+    predicted_cluster = pipeline.named_steps['kmeans'].predict(
+        pipeline.named_steps['scaler'].transform(input_data)
     )[0]
 
-    st.markdown("## 🎯 PREDICTION RESULT")
+    st.success(f"Predicted Cluster: {predicted_cluster}")
+    st.info(f"🎧 Segment Name: {cluster_names.get(predicted_cluster, 'Unknown')}")
+    st.write(cluster_descriptions.get(predicted_cluster, 'No description available.'))
 
-    st.markdown(
-        f"""
-        <div class="result-card">
+# ----------------------------------------------------
+# Cluster Distribution Chart
+# ----------------------------------------------------
+st.markdown('<div class="section-header">📈 Cluster Distribution</div>', unsafe_allow_html=True)
 
-        <h1 style="color:#1DB954;">
-        Predicted Cluster: {cluster}
-        </h1>
+counts = get_cluster_distribution(pipeline)
 
-        <h2 style="color:white;">
-        Segment: {cluster_names[cluster]}
-        </h2>
+bar_colors = ["#1ED760"] * len(counts)
+if predicted_cluster is not None and predicted_cluster in counts.index:
+    bar_colors[list(counts.index).index(predicted_cluster)] = "#0e1117"
 
-        <p style="font-size:22px;">
-        {cluster_descriptions[cluster]}
-        </p>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-# ==========================
-# CLUSTER DISTRIBUTION
-# ==========================
-
-st.markdown("## 📊 CLUSTER DISTRIBUTION")
-
-cluster_distribution = pd.Series(
-    [1700, 2100, 2450, 1600, 2050],
-    index=[
-        "Cluster 0",
-        "Cluster 1",
-        "Cluster 2",
-        "Cluster 3",
-        "Cluster 4"
+fig = go.Figure(
+    data=[
+        go.Bar(
+            x=[str(i) for i in counts.index],
+            y=counts.values,
+            marker_color="#1ED760",
+            marker_line_color="#1ED760",
+            marker_line_width=1,
+        )
     ]
 )
-
-st.bar_chart(cluster_distribution)
-
-# ==========================
-# ABOUT PROJECT
-# ==========================
-
-st.markdown("## ℹ️ ABOUT THIS PROJECT")
-
-st.markdown(
-"""
-<div class="about-card">
-
-<b style="color:#1DB954;">Dataset:</b>
-Spotify Tracks Dataset
-
-<br><br>
-
-<b style="color:#1DB954;">Algorithms Used:</b>
-
-<ul>
-<li>K-Means Clustering</li>
-<li>Hierarchical Clustering</li>
-<li>DBSCAN</li>
-</ul>
-
-<b style="color:#1DB954;">Final Model:</b>
-K-Means Clustering
-
-</div>
-""",
-unsafe_allow_html=True
+fig.update_layout(
+    plot_bgcolor="#0e1117",
+    paper_bgcolor="#0e1117",
+    font_color="#f0f0f0",
+    xaxis_title="Cluster",
+    yaxis_title="Count",
+    xaxis=dict(gridcolor="#1f2530"),
+    yaxis=dict(gridcolor="#1f2530"),
+    margin=dict(l=20, r=20, t=20, b=20),
+    height=420,
 )
+st.plotly_chart(fig, use_container_width=True)
 
-# ==========================
-# FOOTER
-# ==========================
+# ----------------------------------------------------
+# Project Details
+# ----------------------------------------------------
+st.markdown('<div class="section-header">ℹ️ About This Project</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="about-box">
+<b>Dataset:</b> Spotify Tracks Dataset<br><br>
+<b>Algorithms Used:</b> K-Means Clustering, Hierarchical Clustering, DBSCAN<br><br>
+<b>Evaluation Metrics:</b> Silhouette Score, Davies-Bouldin Index, Elbow Method<br><br>
+<b>Final Model:</b> K-Means Clustering
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("---")
+# ----------------------------------------------------
+# Footer
+# ----------------------------------------------------
+st.markdown("<hr>", unsafe_allow_html=True)
