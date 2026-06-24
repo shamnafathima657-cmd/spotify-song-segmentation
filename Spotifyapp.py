@@ -73,17 +73,20 @@ section[data-testid="stSidebar"] h1{
     margin-bottom:20px;
 }
 
-/* ===== SLIDER COLORS (green track + green thumb, layout preserved) ===== */
+/* ===== SLIDER COLORS (full green track, white text labels) ===== */
 
 /* Reset the outer track wrapper so it stays its normal thin shape */
 div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
     background:transparent !important;
 }
 
-/* Color only the actual track segments (the thin colored bars),
-   one level deeper than the wrapper above */
-div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
+/* The actual track segments (both the selected/left and unselected/right
+   portions) are positioned with inline "left" + "width" styles by BaseWeb.
+   Targeting that combination hits both segments precisely, without
+   touching the outer wrapper or the thumb. */
+div[data-testid="stSlider"] div[data-baseweb="slider"] div[style*="left"][style*="width"] {
     background-color:#1DB954 !important;
+    background:#1DB954 !important;
 }
 
 /* Thumb (the round handle) — dark center with a green ring,
@@ -94,22 +97,45 @@ div[data-testid="stSlider"] div[role="slider"] {
     box-shadow:none !important;
 }
 
-/* Value label shown above the thumb, and min/max labels */
+/* Value label shown above the thumb — white text, no background box */
 div[data-testid="stSlider"] div[data-testid="stThumbValue"] {
     background:transparent !important;
-    color:#1DB954 !important;
+    color:#ffffff !important;
 }
 
+/* Min/max labels ("0" / "100") — white text, no background box */
 div[data-testid="stSlider"] div[data-testid="stTickBarMin"],
 div[data-testid="stSlider"] div[data-testid="stTickBarMax"] {
-    color:#1DB954 !important;
+    background:transparent !important;
+    color:#ffffff !important;
+}
+
+/* Catch-all safety net: anything inside the slider still using
+   Streamlit's default red gets forced green (track) or white (text) */
+div[data-testid="stSlider"] [style*="255, 75, 75"],
+div[data-testid="stSlider"] [style*="rgb(255,75,75)"],
+div[data-testid="stSlider"] [style*="ff4b4b"],
+div[data-testid="stSlider"] [style*="#ff4b4b"] {
+    background-color:#1DB954 !important;
+    background:#1DB954 !important;
+    color:#ffffff !important;
+    border-color:#1DB954 !important;
+}
+
+/* Slider widget label (e.g. "Popularity (0 - 100)") in white */
+div[data-testid="stSlider"] label {
+    color:#ffffff !important;
 }
 
 /* Number input border/text */
 div[data-testid="stNumberInput"] input {
     background-color:#0b0b0b !important;
-    color:#1DB954 !important;
+    color:#ffffff !important;
     border:1px solid #1DB954 !important;
+}
+
+div[data-testid="stNumberInput"] label {
+    color:#ffffff !important;
 }
 
 div[data-testid="stNumberInput"] button {
@@ -126,19 +152,9 @@ div[data-testid="stDataFrame"] {
     border:1px solid #1DB954 !important;
     border-radius:10px;
 }
-/* Direct catch: target Streamlit's exact default red (#ff4b4b / rgb(255,75,75))
-   wherever it appears inside the slider, regardless of DOM depth */
-div[data-testid="stSlider"] [style*="255, 75, 75"],
-div[data-testid="stSlider"] [style*="rgb(255,75,75)"],
-div[data-testid="stSlider"] [style*="ff4b4b"],
-div[data-testid="stSlider"] [style*="#ff4b4b"] {
-    background-color:#1DB954 !important;
-    background:#1DB954 !important;
-    color:#1DB954 !important;
-    border-color:#1DB954 !important;
-}
 
 </style>
+
 """, unsafe_allow_html=True)
 
 # ==========================
@@ -393,7 +409,7 @@ st.markdown(
 <b style="color:#1DB954;">Dataset:</b>
 Spotify Tracks Dataset
 
-<br><br>
+<br>
 
 <b style="color:#1DB954;">Algorithms Used:</b>
 
@@ -411,6 +427,4 @@ K-Means Clustering
 unsafe_allow_html=True
 )
 
-# ==========================
-# FOOTER
 # ==========================
