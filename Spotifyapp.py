@@ -75,30 +75,29 @@ section[data-testid="stSidebar"] h1{
 
 /* ===== SLIDER COLORS (green instead of red) ===== */
 
-/* Filled track */
-div[data-testid="stSlider"] div[data-baseweb="slider"] div[role="slider"] {
+/* Catch-all: any inline-styled background/border inside the slider
+   (this is how the filled track segment is colored by Streamlit) */
+div[data-testid="stSlider"] [style*="background"] {
     background-color:#1DB954 !important;
-    border-color:#1DB954 !important;
+    background:#1DB954 !important;
 }
 
-div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
-    background-color:#1DB954 !important;
+div[data-testid="stSlider"] [style*="border-color"] {
+    border-color:#1DB954 !important;
 }
 
 /* Thumb (the round handle) */
 div[data-testid="stSlider"] div[role="slider"] {
     background-color:#1DB954 !important;
+    border-color:#1DB954 !important;
     box-shadow:0 0 0 2px #1DB954 !important;
 }
 
-/* Value label above thumb */
-div[data-testid="stSlider"] div[data-testid="stThumbValue"] {
-    color:#1DB954 !important;
-}
-
-/* Min/max range labels */
+/* Value label shown above the thumb while dragging/selected, and min/max labels */
+div[data-testid="stSlider"] div[data-testid="stThumbValue"],
 div[data-testid="stSlider"] div[data-testid="stTickBarMin"],
-div[data-testid="stSlider"] div[data-testid="stTickBarMax"] {
+div[data-testid="stSlider"] div[data-testid="stTickBarMax"],
+div[data-testid="stSlider"] [style*="color: rgb"] {
     color:#1DB954 !important;
 }
 
@@ -115,28 +114,13 @@ div[data-testid="stNumberInput"] button {
     border:none !important;
 }
 
-/* ===== DATAFRAME / TABLE DARK + GREEN THEME ===== */
-
+/* ===== INPUT FEATURES TABLE: keep default white background =====
+   (st.dataframe renders on a canvas, so CSS can't recolor its text —
+   forcing a dark background makes the text invisible. Leaving it
+   white keeps the table fully readable.) */
 div[data-testid="stDataFrame"] {
-    background-color:#0b0b0b !important;
     border:1px solid #1DB954 !important;
     border-radius:10px;
-}
-
-div[data-testid="stDataFrame"] * {
-    background-color:#0b0b0b !important;
-    color:white !important;
-}
-
-div[data-testid="stDataFrame"] [role="columnheader"] {
-    background-color:#0b0b0b !important;
-    color:#1DB954 !important;
-    font-weight:bold !important;
-    border-bottom:1px solid #1DB954 !important;
-}
-
-div[data-testid="stDataFrame"] [role="gridcell"] {
-    border-color:#222222 !important;
 }
 
 </style>
@@ -417,3 +401,4 @@ unsafe_allow_html=True
 # ==========================
 
 st.markdown("---")
+
