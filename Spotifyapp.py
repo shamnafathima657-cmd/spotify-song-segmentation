@@ -73,27 +73,26 @@ section[data-testid="stSidebar"] h1{
     margin-bottom:20px;
 }
 
-/* ===== SLIDER COLORS (green instead of red) ===== */
+/* ===== SLIDER COLORS (full green, no red anywhere) ===== */
 
-/* Catch-all: any inline-styled background/border inside the slider
-   (this is how the filled track segment is colored by Streamlit) */
-div[data-testid="stSlider"] [style*="background"] {
+/* Brute-force: every nested div inside the slider track gets green,
+   regardless of whether Streamlit set its color via inline style or class.
+   This covers the selected (left) segment, unselected (right) segment,
+   and the thumb itself. */
+div[data-testid="stSlider"] div[data-baseweb="slider"] div {
     background-color:#1DB954 !important;
     background:#1DB954 !important;
-}
-
-div[data-testid="stSlider"] [style*="border-color"] {
     border-color:#1DB954 !important;
 }
 
-/* Thumb (the round handle) */
+/* Thumb outline/focus ring */
 div[data-testid="stSlider"] div[role="slider"] {
     background-color:#1DB954 !important;
     border-color:#1DB954 !important;
     box-shadow:0 0 0 2px #1DB954 !important;
 }
 
-/* Value label shown above the thumb while dragging/selected, and min/max labels */
+/* Value label shown above the thumb, and min/max labels */
 div[data-testid="stSlider"] div[data-testid="stThumbValue"],
 div[data-testid="stSlider"] div[data-testid="stTickBarMin"],
 div[data-testid="stSlider"] div[data-testid="stTickBarMax"],
@@ -402,3 +401,7 @@ unsafe_allow_html=True
 
 st.markdown("---")
 
+
+""",
+unsafe_allow_html=True
+)
