@@ -73,6 +73,72 @@ section[data-testid="stSidebar"] h1{
     margin-bottom:20px;
 }
 
+/* ===== SLIDER COLORS (green instead of red) ===== */
+
+/* Filled track */
+div[data-testid="stSlider"] div[data-baseweb="slider"] div[role="slider"] {
+    background-color:#1DB954 !important;
+    border-color:#1DB954 !important;
+}
+
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
+    background-color:#1DB954 !important;
+}
+
+/* Thumb (the round handle) */
+div[data-testid="stSlider"] div[role="slider"] {
+    background-color:#1DB954 !important;
+    box-shadow:0 0 0 2px #1DB954 !important;
+}
+
+/* Value label above thumb */
+div[data-testid="stSlider"] div[data-testid="stThumbValue"] {
+    color:#1DB954 !important;
+}
+
+/* Min/max range labels */
+div[data-testid="stSlider"] div[data-testid="stTickBarMin"],
+div[data-testid="stSlider"] div[data-testid="stTickBarMax"] {
+    color:#1DB954 !important;
+}
+
+/* Number input border/text */
+div[data-testid="stNumberInput"] input {
+    background-color:#0b0b0b !important;
+    color:#1DB954 !important;
+    border:1px solid #1DB954 !important;
+}
+
+div[data-testid="stNumberInput"] button {
+    background-color:#1DB954 !important;
+    color:black !important;
+    border:none !important;
+}
+
+/* ===== DATAFRAME / TABLE DARK + GREEN THEME ===== */
+
+div[data-testid="stDataFrame"] {
+    background-color:#0b0b0b !important;
+    border:1px solid #1DB954 !important;
+    border-radius:10px;
+}
+
+div[data-testid="stDataFrame"] * {
+    background-color:#0b0b0b !important;
+    color:white !important;
+}
+
+div[data-testid="stDataFrame"] [role="columnheader"] {
+    background-color:#0b0b0b !important;
+    color:#1DB954 !important;
+    font-weight:bold !important;
+    border-bottom:1px solid #1DB954 !important;
+}
+
+div[data-testid="stDataFrame"] [role="gridcell"] {
+    border-color:#222222 !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -286,7 +352,7 @@ if st.button("🎵 PREDICT CLUSTER"):
 
 st.markdown("## 📊 CLUSTER DISTRIBUTION")
 
-cluster_counts = [22389, 7651, 7339, 30180, 38458]
+cluster_counts = [1700, 2100, 2450, 1600, 2050]
 cluster_labels = ["0", "1", "2", "3", "4"]
 
 fig = go.Figure(
@@ -351,19 +417,3 @@ unsafe_allow_html=True
 # ==========================
 
 st.markdown("---")
-
-st.markdown(
-"""
-<center>
-
-🎵 Developed by
-<span style="color:#1DB954;">
-Shamna Fathima
-</span>
-
-| AI & Data Science Project
-
-</center>
-""",
-unsafe_allow_html=True
-)
