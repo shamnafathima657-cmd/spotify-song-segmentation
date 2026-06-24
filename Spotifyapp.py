@@ -73,30 +73,35 @@ section[data-testid="stSidebar"] h1{
     margin-bottom:20px;
 }
 
-/* ===== SLIDER COLORS (full green, no red anywhere) ===== */
+/* ===== SLIDER COLORS (green track + green thumb, layout preserved) ===== */
 
-/* Brute-force: every nested div inside the slider track gets green,
-   regardless of whether Streamlit set its color via inline style or class.
-   This covers the selected (left) segment, unselected (right) segment,
-   and the thumb itself. */
-div[data-testid="stSlider"] div[data-baseweb="slider"] div {
-    background-color:#1DB954 !important;
-    background:#1DB954 !important;
-    border-color:#1DB954 !important;
+/* Reset the outer track wrapper so it stays its normal thin shape */
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
+    background:transparent !important;
 }
 
-/* Thumb outline/focus ring */
-div[data-testid="stSlider"] div[role="slider"] {
+/* Color only the actual track segments (the thin colored bars),
+   one level deeper than the wrapper above */
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
     background-color:#1DB954 !important;
-    border-color:#1DB954 !important;
-    box-shadow:0 0 0 2px #1DB954 !important;
+}
+
+/* Thumb (the round handle) — dark center with a green ring,
+   so it stays visible as a distinct circle rather than blending into the bar */
+div[data-testid="stSlider"] div[role="slider"] {
+    background-color:#000000 !important;
+    border:3px solid #1DB954 !important;
+    box-shadow:none !important;
 }
 
 /* Value label shown above the thumb, and min/max labels */
-div[data-testid="stSlider"] div[data-testid="stThumbValue"],
+div[data-testid="stSlider"] div[data-testid="stThumbValue"] {
+    background:transparent !important;
+    color:#1DB954 !important;
+}
+
 div[data-testid="stSlider"] div[data-testid="stTickBarMin"],
-div[data-testid="stSlider"] div[data-testid="stTickBarMax"],
-div[data-testid="stSlider"] [style*="color: rgb"] {
+div[data-testid="stSlider"] div[data-testid="stTickBarMax"] {
     color:#1DB954 !important;
 }
 
@@ -369,7 +374,6 @@ st.plotly_chart(fig, use_container_width=True)
 # ==========================
 
 st.markdown("## ℹ️ ABOUT THIS PROJECT")
-
 st.markdown(
 """
 <div class="about-card">
@@ -395,9 +399,8 @@ K-Means Clustering
 unsafe_allow_html=True
 )
 
-# ==========================
-# FOOTER
-# ==========================
 
-st.markdown("---")
+unsafe_allow_html=True
+)
 
+# ==========================
