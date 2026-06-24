@@ -126,6 +126,17 @@ div[data-testid="stDataFrame"] {
     border:1px solid #1DB954 !important;
     border-radius:10px;
 }
+/* Direct catch: target Streamlit's exact default red (#ff4b4b / rgb(255,75,75))
+   wherever it appears inside the slider, regardless of DOM depth */
+div[data-testid="stSlider"] [style*="255, 75, 75"],
+div[data-testid="stSlider"] [style*="rgb(255,75,75)"],
+div[data-testid="stSlider"] [style*="ff4b4b"],
+div[data-testid="stSlider"] [style*="#ff4b4b"] {
+    background-color:#1DB954 !important;
+    background:#1DB954 !important;
+    color:#1DB954 !important;
+    border-color:#1DB954 !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -374,6 +385,7 @@ st.plotly_chart(fig, use_container_width=True)
 # ==========================
 
 st.markdown("## ℹ️ ABOUT THIS PROJECT")
+
 st.markdown(
 """
 <div class="about-card">
@@ -399,5 +411,6 @@ K-Means Clustering
 unsafe_allow_html=True
 )
 
-
+# ==========================
+# FOOTER
 # ==========================
