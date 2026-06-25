@@ -122,11 +122,11 @@ The Streamlit application allows users to:
 - View cluster descriptions
 - Interact with the clustering model
 
-Run locally:
+#### Run locally:
 
 streamlit run Spotifyapp.py
 
-streamlit cloud community link:
+#### Streamlit cloud community link:
 
 https://spotify-song-segmentation-kmsirm4qj4nf7rrfvnk7ok.streamlit.app/
 
