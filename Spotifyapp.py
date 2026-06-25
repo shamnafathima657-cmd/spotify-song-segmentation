@@ -328,7 +328,7 @@ if st.button("🎵 PREDICT CLUSTER"):
 
 st.markdown("## 📊 CLUSTER DISTRIBUTION")
 
-cluster_counts = [1700, 2100, 2450, 1600, 2050]
+cluster_counts = [22389, 7651, 7339, 30180, 38458]
 cluster_labels = ["0", "1", "2", "3", "4"]
 
 fig = go.Figure(
