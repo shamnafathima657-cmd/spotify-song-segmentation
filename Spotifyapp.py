@@ -74,16 +74,21 @@ section[data-testid="stSidebar"] h1{
 }
 
 /* ===== SLIDER LOOK ===== */
-/* Track: first inner div = full unfilled bar, second = filled (green) portion */
-div[data-testid="stSlider"] div[data-baseweb="slider"] > div:nth-child(1) {
-    background:#3a3a3a !important;
+/* Catch-all: force every nested div in the slider track to dark gray first */
+div[data-testid="stSlider"] div[data-baseweb="slider"] div {
+    background-color:#3a3a3a !important;
+    background-image:none !important;
 }
 
-div[data-testid="stSlider"] div[data-baseweb="slider"] > div:nth-child(2) {
-    background:#1DB954 !important;
+/* Re-apply green on top for the filled/active portion (covers a couple of
+   likely nesting depths since BaseWeb's DOM varies slightly by version) */
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:nth-child(1),
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div:nth-child(2),
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div:nth-child(1) > div {
+    background-color:#1DB954 !important;
 }
 
-/* Thumb: black center with a green ring */
+/* Thumb: black center with a green ring (after the catch-all so it wins) */
 div[data-testid="stSlider"] div[role="slider"] {
     background-color:#000000 !important;
     border:3px solid #1DB954 !important;
