@@ -361,7 +361,7 @@ st.plotly_chart(fig, use_container_width=True)
 # ABOUT PROJECT
 # ==========================
 
-st.markdown("## ℹ️ ABOUT THIS PROJECT")
+st.markdown("##  ABOUT THIS PROJECT")
 
 st.markdown(
 """
