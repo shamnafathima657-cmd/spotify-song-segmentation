@@ -126,6 +126,10 @@ Run locally:
 
 streamlit run Spotifyapp.py
 
+streamlit cloud community link:
+
+https://spotify-song-segmentation-kmsirm4qj4nf7rrfvnk7ok.streamlit.app/
+
 ## Key Insights
 - Songs were successfully grouped based on audio characteristics.
 - K-Means produced the most balanced clusters.
