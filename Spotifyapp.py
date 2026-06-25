@@ -74,9 +74,16 @@ section[data-testid="stSidebar"] h1{
 }
 
 /* ===== SLIDER LOOK ===== */
-/* Color is now handled by .streamlit/config.toml (primaryColor = green).
-   We only add a cosmetic touch here: a black-center thumb with a green ring,
-   so the handle stays visually distinct from the track. */
+/* Track: first inner div = full unfilled bar, second = filled (green) portion */
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div:nth-child(1) {
+    background:#3a3a3a !important;
+}
+
+div[data-testid="stSlider"] div[data-baseweb="slider"] > div:nth-child(2) {
+    background:#1DB954 !important;
+}
+
+/* Thumb: black center with a green ring */
 div[data-testid="stSlider"] div[role="slider"] {
     background-color:#000000 !important;
     border:3px solid #1DB954 !important;
