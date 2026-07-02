@@ -128,7 +128,7 @@ streamlit run Spotifyapp.py
 
 #### Streamlit cloud community link:
 
-https://spotify-song-segmentation-kmsirm4qj4nf7rrfvnk7ok.streamlit.app/
+https://spotify-song-segmentation-hewshbkzwqd2yixki6icw7.streamlit.app/
 
 ## Key Insights
 - Songs were successfully grouped based on audio characteristics.
