@@ -1,122 +1,18 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import joblib
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 
 # ==========================
 # PAGE CONFIG
 # ==========================
+
 st.set_page_config(
-    page_title="Spotify Song Clustering",
+    page_title="Spotify Song Personality Finder",
     page_icon="🎵",
     layout="wide"
 )
-
-# ==========================
-# SPOTIFY CSS
-# ==========================
-st.markdown("""
-<style>
-
-.stApp{
-    background-color:#000000;
-    color:white;
-}
-
-[data-testid="stSidebar"]{
-    background-color:#050505;
-    border-right:2px solid #1DB954;
-}
-
-h1,h2,h3{
-    color:#1DB954 !important;
-    font-weight:bold;
-}
-
-section[data-testid="stSidebar"] h1{
-    color:#1DB954 !important;
-}
-
-.stButton > button{
-    width:100%;
-    background-color:#1DB954;
-    color:white;
-    border:none;
-    border-radius:10px;
-    height:55px;
-    font-size:20px;
-    font-weight:bold;
-}
-
-.stButton > button:hover{
-    background-color:#1ed760;
-    color:black;
-}
-
-.result-card{
-    border:2px solid #1DB954;
-    border-radius:15px;
-    padding:25px;
-    background-color:#0b0b0b;
-}
-
-.about-card{
-    border:1px solid #1DB954;
-    border-radius:12px;
-    padding:20px;
-    background-color:#0b0b0b;
-}
-
-.green-line{
-    border-top:2px solid #1DB954;
-    margin-top:10px;
-    margin-bottom:20px;
-}
-
-/* ===== SLIDER LOOK ===== */
-/* Thumb: black center with a green ring */
-div[data-testid="stSlider"] div[role="slider"] {
-    background-color:#000000 !important;
-    border:3px solid #1DB954 !important;
-    box-shadow:none !important;
-}
-
-div[data-testid="stSlider"] label,
-div[data-testid="stSlider"] div[data-testid="stThumbValue"],
-div[data-testid="stSlider"] div[data-testid="stTickBarMin"],
-div[data-testid="stSlider"] div[data-testid="stTickBarMax"] {
-    color:#ffffff !important;
-}
-
-/* Number input border/text */
-div[data-testid="stNumberInput"] input {
-    background-color:#0b0b0b !important;
-    color:#ffffff !important;
-    border:1px solid #1DB954 !important;
-}
-
-div[data-testid="stNumberInput"] label {
-    color:#ffffff !important;
-}
-
-div[data-testid="stNumberInput"] button {
-    background-color:#1DB954 !important;
-    color:black !important;
-    border:none !important;
-}
-
-/* ===== INPUT FEATURES TABLE: keep default white background =====
-   (st.dataframe renders on a canvas, so CSS can't recolor its text —
-   forcing a dark background makes the text invisible. Leaving it
-   white keeps the table fully readable.) */
-div[data-testid="stDataFrame"] {
-    border:1px solid #1DB954 !important;
-    border-radius:10px;
-}
-
-</style>
-
-""", unsafe_allow_html=True)
 
 # ==========================
 # LOAD MODEL
@@ -125,18 +21,116 @@ div[data-testid="stDataFrame"] {
 pipeline = joblib.load("spotify_clustering_pipeline.pkl")
 
 # ==========================
+# SPOTIFY CSS
+# ==========================
+st.markdown("""
+<style>
+
+/* Main App */
+.stApp{
+    background-color:#000000;
+    color:white;
+}
+
+/* Header */
+header{
+    background-color:#000000 !important;
+}
+
+[data-testid="stHeader"]{
+    background-color:#000000 !important;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"]{
+    background-color:#121212;
+    border-right:1px solid #1DB954;
+}
+
+/* Sidebar Text */
+[data-testid="stSidebar"] *{
+    color:white !important;
+}
+
+/* Headings */
+h1,h2,h3{
+    color:#1DB954 !important;
+}
+
+/* Button */
+.stButton > button{
+    background-color:#1DB954;
+    color:black;
+    font-weight:bold;
+    border:none;
+    border-radius:12px;
+    height:55px;
+    width:100%;
+}
+
+.stButton > button:hover{
+    background-color:#1ED760;
+}
+
+/* Slider Track */
+.stSlider [data-baseweb="slider"] > div > div{
+    background:#1DB954 !important;
+}
+
+/* Slider Handle */
+.stSlider [role="slider"]{
+    background-color:#1DB954 !important;
+}
+
+/* Number Input */
+input{
+    background-color:#121212 !important;
+    color:white !important;
+}
+
+/* Card */
+.card{
+    background:#121212;
+    padding:20px;
+    border-radius:15px;
+    border:1px solid #1DB954;
+}
+
+/* Slider value labels (0, 100, 0.00, 1.00, etc.) */
+.stSlider span{
+    color: white !important;
+}
+
+/* Current slider value (50, 0.50, etc.) */
+.stSlider div[data-testid="stThumbValue"]{
+    color: white !important;
+    font-weight: bold;
+}
+
+/* Sidebar labels */
+section[data-testid="stSidebar"] label{
+    color: white !important;
+}
+
+/* Number input text (Duration) */
+section[data-testid="stSidebar"] input{
+    color: white !important;
+    background-color:#1a1a1a !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+# ==========================
 # SIDEBAR
 # ==========================
 
-st.sidebar.markdown("# 🎵 Spotify")
-
-st.sidebar.markdown("### ENTER SONG FEATURES")
+st.sidebar.markdown("# 🎧 Song Features")
 
 popularity = st.sidebar.slider(
-    "Popularity (0 - 100)",
-    0,
-    100,
-    50
+    "Popularity",
+    0,100,50
 )
 
 duration_ms = st.sidebar.number_input(
@@ -147,66 +141,48 @@ duration_ms = st.sidebar.number_input(
 )
 
 danceability = st.sidebar.slider(
-    "Danceability (0 - 1)",
-    0.0,
-    1.0,
-    0.50
+    "Danceability",
+    0.0,1.0,0.50
 )
 
 energy = st.sidebar.slider(
-    "Energy (0 - 1)",
-    0.0,
-    1.0,
-    0.50
+    "Energy",
+    0.0,1.0,0.50
 )
 
 loudness = st.sidebar.slider(
-    "Loudness (-60 - 5)",
-    -60.0,
-    5.0,
-    -10.0
+    "Loudness",
+    -60.0,5.0,-10.0
 )
 
 speechiness = st.sidebar.slider(
-    "Speechiness (0 - 1)",
-    0.0,
-    1.0,
-    0.10
+    "Speechiness",
+    0.0,1.0,0.10
 )
 
 acousticness = st.sidebar.slider(
-    "Acousticness (0 - 1)",
-    0.0,
-    1.0,
-    0.50
+    "Acousticness",
+    0.0,1.0,0.50
 )
 
 instrumentalness = st.sidebar.slider(
-    "Instrumentalness (0 - 1)",
-    0.0,
-    1.0,
-    0.00
+    "Instrumentalness",
+    0.0,1.0,0.00
 )
 
 liveness = st.sidebar.slider(
-    "Liveness (0 - 1)",
-    0.0,
-    1.0,
-    0.20
+    "Liveness",
+    0.0,1.0,0.20
 )
 
 valence = st.sidebar.slider(
-    "Valence (0 - 1)",
-    0.0,
-    1.0,
-    0.50
+    "Valence",
+    0.0,1.0,0.50
 )
 
 tempo = st.sidebar.slider(
-    "Tempo (0 - 250)",
-    0.0,
-    250.0,
-    120.0
+    "Tempo",
+    0.0,250.0,120.0
 )
 
 # ==========================
@@ -240,152 +216,209 @@ input_data = pd.DataFrame([[
 ])
 
 # ==========================
-# MAIN HEADER
+# HEADER
 # ==========================
 
-st.markdown("# 🎵 Spotify Song Clustering")
+st.title("🎵 Spotify Song Personality Finder")
 
-st.write(
-    "This application predicts the cluster of a song based on its audio features using a trained K-Means clustering model."
-)
+st.write("""
+Discover the personality of a song using Spotify audio features.
+Adjust the song attributes and see which music style best matches your song.
+""")
 
-st.markdown(
-    "<div class='green-line'></div>",
-    unsafe_allow_html=True
-)
-
+st.markdown("---")
 # ==========================
-# INPUT FEATURES
+# FEATURE CARDS
 # ==========================
+st.markdown("## 🎧 Song Features Overview")
 
-st.markdown("## 📋 INPUT FEATURES")
+col1, col2, col3, col4 = st.columns(4)
 
-st.dataframe(
-    input_data,
-    use_container_width=True
-)
+with col1:
+    st.markdown(f"""
+    <div style="
+        background:#121212;
+        padding:20px;
+        border-radius:15px;
+        border:1px solid #1DB954;
+        text-align:center;">
+        <h4 style="color:#1DB954;">Popularity</h4>
+        <h2 style="color:white;">{popularity}</h2>
+    </div>
+    """, unsafe_allow_html=True)
 
+with col2:
+    st.markdown(f"""
+    <div style="
+        background:#121212;
+        padding:20px;
+        border-radius:15px;
+        border:1px solid #1DB954;
+        text-align:center;">
+        <h4 style="color:#1DB954;">Danceability</h4>
+        <h2 style="color:white;">{danceability:.2f}</h2>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    st.markdown(f"""
+    <div style="
+        background:#121212;
+        padding:20px;
+        border-radius:15px;
+        border:1px solid #1DB954;
+        text-align:center;">
+        <h4 style="color:#1DB954;">Energy</h4>
+        <h2 style="color:white;">{energy:.2f}</h2>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col4:
+    st.markdown(f"""
+    <div style="
+        background:#121212;
+        padding:20px;
+        border-radius:15px;
+        border:1px solid #1DB954;
+        text-align:center;">
+        <h4 style="color:#1DB954;">Tempo</h4>
+        <h2 style="color:white;">{tempo:.0f}</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
 # ==========================
-# CLUSTER DETAILS
+# CLUSTER NAMES
 # ==========================
 
 cluster_names = {
-    0: "High Energy Segment",
-    1: "Popular Music Segment",
-    2: "Dance Music Segment",
-    3: "Acoustic Segment",
-    4: "Balanced Audio Segment"
+    0: "🔥 Power Beats",
+    1: "🌟 Chart Toppers",
+    2: "💃 Dance Vibes",
+    3: "🌿 Chill Acoustic",
+    4: "🎶 Everyday Mix"
 }
 
 cluster_descriptions = {
-    0: "Songs with high energy and tempo.",
-    1: "Popular songs with broad audience appeal.",
-    2: "Highly danceable songs suitable for playlists and parties.",
-    3: "Acoustic and softer songs.",
-    4: "Songs with balanced audio characteristics."
+    0: "High-energy songs perfect for workouts and intense playlists.",
+    1: "Popular songs loved by a wide audience.",
+    2: "Danceable tracks ideal for parties and celebrations.",
+    3: "Relaxing acoustic songs with a calm atmosphere.",
+    4: "Balanced songs suitable for everyday listening."
 }
 
 # ==========================
-# PREDICTION
+# PREDICTION BUTTON
 # ==========================
 
-if st.button("🎵 PREDICT CLUSTER"):
+if st.button("🎵 Analyze My Song"):
 
-    scaled_input = pipeline.named_steps['scaler'].transform(
-        input_data
-    )
+    cluster = pipeline.predict(input_data)[0]
 
-    cluster = pipeline.named_steps['kmeans'].predict(
-        scaled_input
-    )[0]
+    st.success("Song analyzed successfully!")
 
-    st.markdown("## 🎯 PREDICTION RESULT")
+    st.markdown("## 🎯 Your Song Personality")
+
+    cluster_name = cluster_names.get(cluster, "Unknown Cluster")
+    cluster_desc = cluster_descriptions.get(cluster, "No description available.")
 
     st.markdown(
         f"""
-        <div class="result-card">
+        <div style="
+            background-color:#121212;
+            border:2px solid #1DB954;
+            border-radius:20px;
+            padding:25px;
+            margin-top:15px;
+        ">
 
-        <h1 style="color:#1DB954;">
-        Predicted Cluster: {cluster}
-        </h1>
-
-        <h2 style="color:white;">
-        Segment: {cluster_names[cluster]}
+        <h2 style="
+            color:#1DB954;
+            margin-bottom:15px;
+        ">
+            {cluster_name}
         </h2>
 
-        <p style="font-size:22px;">
-        {cluster_descriptions[cluster]}
+        <p style="
+            color:white;
+            font-size:20px;
+            line-height:1.8;
+        ">
+            {cluster_desc}
         </p>
 
         </div>
         """,
         unsafe_allow_html=True
     )
-
-# ==========================
-# CLUSTER DISTRIBUTION
-# ==========================
-
-st.markdown("## 📊 CLUSTER DISTRIBUTION")
+st.markdown("---")
+st.subheader("📊 Music Segment Distribution")
 
 cluster_counts = [22389, 7651, 7339, 30180, 38458]
-cluster_labels = ["0", "1", "2", "3", "4"]
 
-fig = go.Figure(
-    data=[
-        go.Bar(
-            x=cluster_labels,
-            y=cluster_counts,
-            marker_color="#1DB954",
-            marker_line_color="#1DB954",
-            marker_line_width=1,
-        )
-    ]
+cluster_labels = [
+    "Power Beats",
+    "Chart Toppers",
+    "Dance Vibes",
+    "Chill Acoustic",
+    "Everyday Mix"
+]
+
+fig, ax = plt.subplots(figsize=(8,4))
+
+ax.bar(
+    cluster_labels,
+    cluster_counts,
+    color="#1DB954"
+)
+ax.set_facecolor("#121212")
+fig.patch.set_facecolor("#000000")
+
+ax.set_title(
+    "Spotify Song Segments",
+    color="white"
 )
 
-fig.update_layout(
-    plot_bgcolor="#000000",
-    paper_bgcolor="#000000",
-    font_color="white",
-    xaxis_title="Cluster",
-    yaxis_title="Count",
-    xaxis=dict(gridcolor="#222222", zerolinecolor="#222222"),
-    yaxis=dict(gridcolor="#222222", zerolinecolor="#222222"),
-    margin=dict(l=20, r=20, t=20, b=20),
-    height=420,
+ax.set_xlabel(
+    "Cluster",
+    color="white"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+ax.set_ylabel(
+    "Number of Songs",
+    color="white"
+)
 
-# ==========================
-# ABOUT PROJECT
-# ==========================
+ax.tick_params(colors="white")
 
-st.markdown("##  ABOUT THIS PROJECT")
+for spine in ax.spines.values():
+    spine.set_color("white")
 
-st.markdown(
-"""
-<div class="about-card">
+st.pyplot(fig)
+st.markdown("---")
 
-<b style="color:#1DB954;">Dataset:</b>
-Spotify Tracks Dataset
+st.markdown("""
+<div style="
+background:#121212;
+padding:25px;
+border-radius:15px;
+border:1px solid #1DB954;
+">
 
-<br>
+<h3 style="color:#1DB954;">
+ℹ️ About This Project
+</h3>
 
-<b style="color:#1DB954;">Algorithms Used:</b>
+<p style="color:white;">
+This application groups Spotify songs into music segments using Machine Learning clustering techniques.
+</p>
 
-<ul>
-<li>K-Means Clustering</li>
-<li>Hierarchical Clustering</li>
-<li>DBSCAN</li>
-</ul>
+<p style="color:white;">
+Audio features such as danceability, energy, loudness, tempo, acousticness and popularity are used to identify similar song patterns.
+</p>
 
-<b style="color:#1DB954;">Final Model:</b>
-K-Means Clustering
+<p style="color:white;">
+The project compares K-Means, Hierarchical Clustering and DBSCAN, with K-Means selected as the final model for deployment.
+</p>
 
 </div>
-""",
-unsafe_allow_html=True
-)
-
-# ==========================
+""", unsafe_allow_html=True)
